@@ -26,7 +26,7 @@
     </div>
   </nav>
 
-  <div class="container mt-4">
+  <div class="containmt-4"er >
     <h1>Welcome to CodeIgniter 4 with Bootstrap!</h1>
   </div>
 
