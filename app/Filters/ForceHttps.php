@@ -40,4 +40,4 @@ class ForceHttps implements FilterInterface
         return $response;
     }
 }
-?>
+

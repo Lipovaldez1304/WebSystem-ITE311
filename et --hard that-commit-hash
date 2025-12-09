@@ -1,0 +1,23 @@
+[33m898e3fb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mbackup-before-merge[m[33m)[m HEAD@{0}: reset: moving to backup-before-merge
+[33m898e3fb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mbackup-before-merge[m[33m)[m HEAD@{1}: revert: Revert "ROLE BASE Implementation update"
+[33m9492733[m HEAD@{2}: reset: moving to HEAD~1
+[33m4f3e40c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{3}: checkout: moving from main to master
+[33m4f3e40c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{4}: rebase (finish): returning to refs/heads/main
+[33m4f3e40c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{5}: rebase (start): checkout 3dbc90d
+[33m4f3e40c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{6}: reset: moving to 4f3e40c
+[33md06cff0[m HEAD@{7}: reset: moving to d06cff0
+[33m9492733[m HEAD@{8}: reset: moving to origin/master
+[33md06cff0[m HEAD@{9}: checkout: moving from main to main
+[33md06cff0[m HEAD@{10}: reset: moving to d06cff0
+[33m3dbc90d[m HEAD@{11}: reset: moving to 3dbc90d
+[33mbb730ad[m HEAD@{12}: reset: moving to bb730ad
+[33m4da8b36[m HEAD@{13}: reset: moving to 4da8b36
+[33m9492733[m HEAD@{14}: reset: moving to 9492733
+[33m4f3e40c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{15}: reset: moving to HEAD
+[33m4f3e40c[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{16}: commit: ROLE BASE Implementation
+[33m9492733[m HEAD@{17}: Branch: renamed refs/heads/master to refs/heads/main
+[33m9492733[m HEAD@{19}: commit: ROLE BASE Implementation updates
+[33m4da8b36[m HEAD@{20}: commit: ROLE BASE Implementation updates
+[33md06cff0[m HEAD@{21}: commit: ROLE BASE Implementation update
+[33mbb730ad[m HEAD@{22}: commit: changes in dashboard
+[33m3dbc90d[m HEAD@{23}: commit (initial): recent changes

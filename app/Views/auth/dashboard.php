@@ -14,6 +14,7 @@
                 Role: <strong><?= esc(ucfirst($role)) ?></strong>
             </p>
             <hr class="my-4">
+            
 
             <!-- ===========================================
                  ROLE-BASED DASHBOARD

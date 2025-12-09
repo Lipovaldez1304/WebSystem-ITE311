@@ -83,3 +83,4 @@ class App extends BaseConfig
     public int $sessionTimeToUpdate = 300;
     public bool $sessionRegenerateDestroy = false;
 }
+

@@ -114,7 +114,6 @@
 
     </div>
 </div>
-
 <script src="<?= base_url('js/bootstrap.bundle.min.js') ?>"></script>
 <script>
     setTimeout(() => {
