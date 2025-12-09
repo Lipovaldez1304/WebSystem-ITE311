@@ -1,0 +1,8 @@
+# Ignore all files in the Debug Bar directory
+writable/debugbar/*
+
+# Ignore all session files
+writable/session/*
+
+# Ignore general cache/temp files
+writable/cache/*
