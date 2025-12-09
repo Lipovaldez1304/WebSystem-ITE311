@@ -5,6 +5,7 @@
 
         <div class="dash-card">
 
+        
             <!-- DASHBOARD HEADER -->
             <h2 class="dash-title">
                 <i class="bi bi-speedometer2"></i> Welcome, <?= esc($name) ?>!
