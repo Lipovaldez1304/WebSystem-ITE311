@@ -5,16 +5,14 @@
 
         <div class="dash-card">
 
-        
+
             <!-- DASHBOARD HEADER -->
             <h2 class="dash-title">
                 <i class="bi bi-speedometer2"></i> Welcome, <?= esc($name) ?>!
             </h2>   
-
             <p class="text-muted fs-5">
                 Role: <strong><?= esc(ucfirst($role)) ?></strong>
             </p>
-
             <hr class="my-4">
 
             <!-- ===========================================
