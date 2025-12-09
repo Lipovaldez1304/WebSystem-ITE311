@@ -6,128 +6,157 @@ use App\Models\UserModel;
 
 class Auth extends BaseController
 {
-    // Show registration form
-    public function new()
+    // =======
+    // LOGIN
+    // =======
+
+    public function login()
     {
-        helper(['form']);
-        return view('auth/register');
-    }
-
-    // Process registration
-    public function create()
-    {
-        helper(['form']);
-        $users = new UserModel();
-
-        $data = [
-            'name'         => $this->request->getPost('name'),
-            'email'        => $this->request->getPost('email'),
-            'password'     => $this->request->getPost('password'),
-            'pass_confirm' => $this->request->getPost('pass_confirm'),
-            'role'         => 'student',  // ← FIXED: Changed from 'user' to 'student'
-        ];
-
-        if (!$users->save($data)) {
-            // Redirect back with input + validation errors
-            return redirect()->back()
-                             ->withInput()
-                             ->with('errors', $users->errors());
-        }
-
-        return redirect()->to('/register/success')
-                         ->with('success', 'Account created!');
-    }
-
-    // Show success page
-    public function success()
-    {
-        return view('register_success');
-    }
-
-    // Show login form
-    public function index()
-    {
-        helper(['form', 'url']);
         return view('auth/login');
     }
 
-    // Process login
-    public function auth()
+
+    public function loginPost()
     {
         $session = session();
-        $users   = new UserModel();
+        $model = new UserModel();
 
-        $email    = $this->request->getPost('email');
+        $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
-        $user = $users->where('email', $email)->first();
+        $user = $model->where('email', $email)->first();
 
-        if ($user) {
-            if (password_verify($password, $user['password'])) {
-                $sessionData = [
-                    'id'         => $user['id'],
-                    'name'       => $user['name'],
-                    'email'      => $user['email'],
-                    'role'       => $user['role'],      // ← This is correct
-                    'isLoggedIn' => true,
-                ];
-                $session->set($sessionData);
-
-                return redirect()->to('/dashboard');
-            } else {
-                return redirect()->back()->with('error', 'Wrong password.');
-            }
-        } else {
-            return redirect()->back()->with('error', 'Email not found.');
+        if (!$user) {
+            $session->setFlashdata('error', 'Email not found.');
+            return redirect()->to('/login');
         }
+
+        if (!password_verify($password, $user['password'])) {
+            $session->setFlashdata('error', 'Incorrect password.');
+            return redirect()->to('/login');
+        }
+
+        // Check if user is restricted (only for non-admin users)
+        if ($user['role'] !== 'admin' && $user['is_restricted'] == 1) {
+            $session->setFlashdata('error', 'Your account has been restricted. Please contact the administrator.');
+            return redirect()->to('/login');
+        }
+
+        // Set session with session_version
+        $session->set([
+            'user_id' => $user['id'],
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'role' => $user['role'],
+            'is_restricted' => $user['is_restricted'],
+            'session_version' => $user['session_version'] ?? 1,
+            'isLoggedIn' => true
+        ]);
+
+        return redirect()->to('/dashboard');
     }
 
-    // Logout
+
+
+    // ==========
+    // REGISTER
+    // ==========
+
+    public function register()
+    {
+        return view('auth/register');
+    }
+
+    public function registerPost()
+    {
+        $validation = \Config\Services::validation();
+
+        $validation->setRules([
+            'name'     => 'required|min_length[3]',
+            'email'    => 'required|valid_email|is_unique[users.email]',
+            'password' => 'required|min_length[6]',
+            'confirm_password' => 'required|matches[password]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+        }
+
+        $userModel = new UserModel();
+
+        // New registrations are students by default
+        $userModel->insert([
+            'name'          => $this->request->getPost('name'),
+            'email'         => $this->request->getPost('email'),
+            'password'      => $this->request->getPost('password'),
+            'role'          => 'student',
+            'is_restricted' => 0,
+        ]);
+
+        session()->setFlashdata('success', 'Registration successful! Please log in.');
+        return redirect()->to('/login');
+    }
+
+
+
+    // ============
+    // DASHBOARD
+    // ============
+
+    public function dashboard()
+    {
+        $session = session();
+
+        // Authorization check - ensure user is logged in
+        if (!$session->get('isLoggedIn')) {
+            return redirect()->to('/login')->with('error', 'Please log in to access the dashboard.');
+        }
+
+        $role = $session->get('role');
+        $name = $session->get('name');
+        $userId = $session->get('user_id');
+
+        // Validate role exists
+        if (empty($role)) {
+            session()->destroy();
+            return redirect()->to('/login')->with('error', 'Invalid session. Please log in again.');
+        }
+
+        $data = [
+            'name' => $name,
+            'role' => $role
+        ];
+
+        // Role-based data loading from database
+        if ($role === 'admin') {
+            $userModel = new UserModel();
+            $data['total_users'] = $userModel->countAll();
+            $data['restricted_users'] = $userModel->where('is_restricted', 1)->countAllResults();
+            $data['active_users'] = $userModel->where('is_restricted', 0)->countAllResults();
+
+        } elseif ($role === 'teacher') {
+            // Load teacher-specific data from database
+            $data['pending_grading'] = 0; 
+            $data['courses'] = []; 
+            // Example: $data['courses'] = $courseModel->where('teacher_id', $userId)->findAll();
+
+        } elseif ($role === 'student') {
+            // Load student-specific data from database
+            $data['due_date'] = 'None'; 
+            $data['grades'] = []; 
+            // Example: $data['grades'] = $gradeModel->where('student_id', $userId)->findAll();
+        }
+
+        return view('auth/dashboard', $data);
+    }
+
+    // =========
+    // LOGOUT
+    // =========
+
     public function logout()
     {
         session()->destroy();
         return redirect()->to('/login');
     }
-
-    // Dashboard
-// In app/Controllers/Auth.php, replace your existing dashboard() method:
-
-public function dashboard()
-{
-    $session = session();
-    $role = $session->get('role');
-    
-    // 1. Perform Authorization Check (Lab Step 3.2)
-    if (!$session->get('isLoggedIn')) {
-        return redirect()->to('/login')->with('error', 'You must log in first.');
-    }
-
-    // Prepare base data for all views
-    $data = [
-        'name'  => $session->get('name'),
-        'role'  => $role,
-        'title' => ucfirst($role) . ' Dashboard'
-    ];
-    
-    // 2. Fetch Role-Specific Data (Lab Step 3.2 - Using mock data for now)
-    if ($role === 'admin') {
-        // Data needed for the Admin Dashboard (e.g., system stats)
-        $data['total_users'] = 500; 
-        $data['pending_approvals'] = 12; 
-        $data['latest_activity'] = 'System log updated.';
-
-    } elseif ($role === 'teacher') {
-        // Data needed for the Teacher Dashboard (e.g., courses they teach)
-        $data['courses'] = ['Web Systems and Tech', 'Data Structures', 'Algorithms']; 
-        $data['pending_grading'] = 8;
-
-    } elseif ($role === 'student') {
-        // Data needed for the Student Dashboard (e.g., their current grades)
-        $data['grades'] = ['ITE 311: A', 'Programming 1: B+', 'General Ed: Pass']; 
-        $data['due_date'] = '2025-10-15';
-    }
-
-    // 3. Pass the user's role and relevant data to the unified view [cite: 76]
-    return view('auth/dashboard', $data);
-}
 }

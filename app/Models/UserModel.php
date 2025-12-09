@@ -11,41 +11,73 @@ class UserModel extends Model
     protected $returnType    = 'array';
     protected $useTimestamps = true;
 
-    // Only allow these columns to be mass-assigned
-    protected $allowedFields = ['name', 'email', 'password', 'role'];
+    protected $allowedFields = ['name', 'email', 'password', 'role', 'is_restricted', 'session_version'];
 
-    // Validate incoming form fields (including non-DB fields)
-    protected $validationRules = [
-        'name'         => 'required|min_length[3]|max_length[100]',
-        'email'        => 'required|valid_email|is_unique[users.email]',
-        'password'     => 'required|min_length[8]',
-        'pass_confirm' => 'required|matches[password]',
-    ];
+    protected $validationRules    = [];
+    protected $validationMessages = [];
+    protected $skipValidation     = false;
 
-    protected $validationMessages = [
-        'email' => [
-            'is_unique' => 'That email is already taken.',
-        ],
-        'pass_confirm' => [
-            'matches' => 'Passwords do not match.',
-        ],
-    ];
-
-    protected $skipValidation = false;
-
-    // Hash password on insert/update if provided
     protected $beforeInsert = ['hashPassword'];
-    protected $beforeUpdate = ['hashPassword'];
+    protected $beforeUpdate = ['hashPassword', 'checkRoleChange'];
 
+    /* ---------------------------------------------------
+     | PASSWORD HASHER
+     --------------------------------------------------- */
     protected function hashPassword(array $data)
     {
-        if (!empty($data['data']['password'])) {
-        $data['data']['password'] = password_hash(
-            $data['data']['password'],
-            PASSWORD_DEFAULT
-        );
-        unset($data['data']['pass_confirm']);
+        if (isset($data['data']['password']) && !empty($data['data']['password'])) {
+            $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+        } else {
+            if (isset($data['data']['password']) && empty($data['data']['password'])) {
+                unset($data['data']['password']);
+            }
+        }
+
+        return $data;
     }
-    return $data;
+
+    /* ---------------------------------------------------
+     | INCREMENT SESSION VERSION IF ROLE CHANGED
+     --------------------------------------------------- */
+    protected function checkRoleChange(array $data)
+    {
+        // Only increment if role is being changed
+        if (isset($data['data']['role']) && isset($data['id'])) {
+            $user = $this->find($data['id'][0]);
+            if ($user && $user['role'] !== $data['data']['role']) {
+                $data['data']['session_version'] = ($user['session_version'] ?? 0) + 1;
+            }
+        }
+        
+        return $data;
+    }
+
+    /* ---------------------------------------------------
+     | ROLE COUNTS (For Dashboard)
+     --------------------------------------------------- */
+    public function countByRole($role)
+    {
+        return $this->where('role', $role)
+                    ->where('is_restricted', 0)
+                    ->countAllResults();
+    }
+
+    public function countRestricted()
+    {
+        return $this->where('is_restricted', 1)
+                    ->countAllResults();
+    }
+
+    /* ---------------------------------------------------
+     | GET ALL ROLE COUNTS (For Admin Dashboard)
+     --------------------------------------------------- */
+    public function getRoleCounts()
+    {
+        return [
+            'admin'      => $this->countByRole('admin'),
+            'teacher'    => $this->countByRole('teacher'),
+            'student'    => $this->countByRole('student'),
+            'restricted' => $this->countRestricted(),
+        ];
     }
 }

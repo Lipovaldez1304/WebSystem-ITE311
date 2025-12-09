@@ -69,7 +69,7 @@
     <header class="top-header">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
-                <h1 class="site-title">CI4 Site</h1>
+                <h1 class="site-title">RMMC LMS</h1>
 
                 <nav>
                      <ul class="nav-links">
