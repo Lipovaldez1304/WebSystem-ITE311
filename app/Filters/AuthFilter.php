@@ -64,3 +64,4 @@ class AuthFilter implements FilterInterface
         // Nothing needed here
     }
 }
+

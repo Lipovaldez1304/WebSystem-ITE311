@@ -40,3 +40,4 @@ class Filters extends BaseConfig
         ],
     ];
 }
+

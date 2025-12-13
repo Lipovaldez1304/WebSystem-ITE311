@@ -33,3 +33,4 @@ $routes->group('teacher', ['filter' => 'role:teacher'], function($routes){});
 $routes->group('student', ['filter' => 'role:student'], function($routes){});
 
 $routes->setAutoRoute(false);
+

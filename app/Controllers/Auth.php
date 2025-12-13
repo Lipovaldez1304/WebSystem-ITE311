@@ -21,9 +21,12 @@ class Auth extends BaseController
         $session = session();
         $model = new UserModel();
 
+
+
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
+        // Authentication// 
         $user = $model->where('email', $email)->first();
 
         if (!$user) {
@@ -103,7 +106,6 @@ class Auth extends BaseController
     // DASHBOARD
     // ============
 
-
     public function dashboard()
     {
         $session = session();
@@ -128,6 +130,8 @@ class Auth extends BaseController
             'role' => $role
         ];
 
+
+        
         // Role-based data loading from database
         if ($role === 'admin') {
             $userModel = new UserModel();

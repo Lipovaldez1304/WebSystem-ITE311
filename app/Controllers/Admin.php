@@ -205,3 +205,4 @@ class Admin extends BaseController
         return redirect()->to('/admin/manage-users')->with('success', 'New user added successfully!');
     }
 }
+

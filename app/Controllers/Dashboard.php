@@ -52,3 +52,4 @@ class Dashboard extends BaseController
         return view('auth/dashboard', $data);
     }
 }
+
