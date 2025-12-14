@@ -32,5 +32,7 @@ $routes->group('admin', ['filter' => 'role:admin'], function($routes) {
 $routes->group('teacher', ['filter' => 'role:teacher'], function($routes){});
 $routes->group('student', ['filter' => 'role:student'], function($routes){});
 
-$routes->setAutoRoute(false);
+// Course enrollment (for students only) - LAB 6
+$routes->post('course/enroll', 'Course::enroll', ['filter' => 'role:student']);
 
+$routes->setAutoRoute(false);

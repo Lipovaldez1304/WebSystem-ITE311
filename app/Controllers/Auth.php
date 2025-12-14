@@ -21,8 +21,6 @@ class Auth extends BaseController
         $session = session();
         $model = new UserModel();
 
-
-
         $email = $this->request->getPost('email');
         $password = $this->request->getPost('password');
 
@@ -130,7 +128,6 @@ class Auth extends BaseController
             'role' => $role
         ];
 
-
         
         // Role-based data loading from database
         if ($role === 'admin') {
@@ -147,9 +144,20 @@ class Auth extends BaseController
 
         } elseif ($role === 'student') {
             // Load student-specific data from database
+            $enrollmentModel = new \App\Models\EnrollmentModel();
+            $courseModel = new \App\Models\CourseModel();
+            
+            // Get enrolled courses
+            $data['enrolled_courses'] = $enrollmentModel->getUserEnrollments($userId);
+            
+            // Get available courses (not enrolled yet)
+            $data['available_courses'] = $courseModel->getCoursesNotEnrolledByUser($userId);
+            
+            // Count enrollments
+            $data['total_enrolled'] = count($data['enrolled_courses']);
+            
             $data['due_date'] = 'None'; 
-            $data['grades'] = []; 
-            // Example: $data['grades'] = $gradeModel->where('student_id', $userId)->findAll();
+            $data['grades'] = [];
         }
 
         return view('auth/dashboard', $data);
