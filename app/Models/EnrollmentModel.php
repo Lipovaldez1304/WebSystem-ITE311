@@ -55,6 +55,7 @@ class EnrollmentModel extends Model
     {
         return $this->where('user_id', $userId)->countAllResults();
     }
+    
 
     /**
      * Unenroll a user from a course (optional - for future use)

@@ -90,6 +90,7 @@ class Course extends BaseController
     {
         $session = session();
         if (!$session->get('isLoggedIn')) {
+            
             return redirect()->to('/login');
         }
 

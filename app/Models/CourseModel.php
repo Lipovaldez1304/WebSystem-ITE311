@@ -46,6 +46,8 @@ class CourseModel extends Model
             ->getResultArray();
     }
 
+
+    
     /**
      * Alternative: Get courses not enrolled by user using NOT IN
      */
