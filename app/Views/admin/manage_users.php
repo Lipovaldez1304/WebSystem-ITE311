@@ -16,7 +16,8 @@
                 </a>
             </div>
 
-            <hr class="my-4">
+            <hr class="my-4"> --
+            
 
             <!-- STATISTICS -->
             <div class="d-flex gap-3 flex-wrap mb-4">
